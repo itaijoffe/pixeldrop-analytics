@@ -244,6 +244,67 @@
     footer a { color: var(--red); text-decoration: none; }
     footer .footer-name { color: var(--white); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
 
+    /* ─── Dashboard Screenshots ─────────────────────────────────── */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .dash-thumb {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: zoom-in;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .dash-thumb:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .dash-thumb img { width: 100%; display: block; }
+    .dash-thumb .dash-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(27,31,59,.92));
+      color: #fff; padding: 18px 14px 10px;
+      font-size: .82rem; font-weight: 600;
+    }
+    .dash-thumb .zoom-icon {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(230,57,70,.85);
+      color: #fff; border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; opacity: 0; transition: opacity .2s;
+    }
+    .dash-thumb:hover .zoom-icon { opacity: 1; }
+
+    /* ─── Lightbox ───────────────────────────────────────────────── */
+    #lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.92);
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 95vw; max-height: 92vh;
+      border-radius: 8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      object-fit: contain;
+    }
+    #lightbox-close {
+      position: fixed; top: 18px; right: 24px;
+      color: #fff; font-size: 2rem; cursor: pointer;
+      background: none; border: none; line-height: 1;
+      opacity: .8; transition: opacity .2s;
+    }
+    #lightbox-close:hover { opacity: 1; }
+    #lightbox-caption {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      color: #ccc; font-size: .9rem; background: rgba(0,0,0,.5);
+      padding: 6px 18px; border-radius: 20px; white-space: nowrap;
+    }
+
     /* ─── Responsive ────────────────────────────────────────────── */
     @media (max-width: 640px) {
       nav { padding: 0 20px; }
@@ -251,6 +312,7 @@
       section { padding: 52px 20px; }
       #hero { padding: 60px 20px 52px; }
       .insight-row { grid-template-columns: 1fr; }
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -528,26 +590,27 @@
       a data model connecting multiple tables, and advanced DAX for accurate KPIs.
     </p>
 
-    <div class="pages-grid">
-      <div class="page-card">
-        <div class="page-num">Page 1</div>
-        <div class="page-title">Executive Overview</div>
-        <div class="page-visuals">4 KPI cards · Top 5 Products bar · Revenue by Category donut · Monthly Revenue line chart</div>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:14px;">👆 Click any page to expand</p>
+    <div class="dashboard-grid">
+      <div class="dash-thumb" onclick="openLightbox('powerbi/page1_executive_overview.png','Page 1 — Executive Overview')">
+        <img src="powerbi/page1_executive_overview.png" alt="Executive Overview" />
+        <div class="dash-label">Page 1 — Executive Overview</div>
+        <div class="zoom-icon">⛶</div>
       </div>
-      <div class="page-card">
-        <div class="page-num">Page 2</div>
-        <div class="page-title">Geographic Analysis</div>
-        <div class="page-visuals">US bubble map · Top 5 States bar chart · Orders by Customer Segment donut</div>
+      <div class="dash-thumb" onclick="openLightbox('powerbi/page2_geographic_analysis.png','Page 2 — Geographic Analysis')">
+        <img src="powerbi/page2_geographic_analysis.png" alt="Geographic Analysis" />
+        <div class="dash-label">Page 2 — Geographic Analysis</div>
+        <div class="zoom-icon">⛶</div>
       </div>
-      <div class="page-card">
-        <div class="page-num">Page 3</div>
-        <div class="page-title">Product Deep Dive</div>
-        <div class="page-visuals">All Products bar · Revenue vs Units scatter plot · Product Performance summary table</div>
+      <div class="dash-thumb" onclick="openLightbox('powerbi/page3_product_deep_dive.png','Page 3 — Product Deep Dive')">
+        <img src="powerbi/page3_product_deep_dive.png" alt="Product Deep Dive" />
+        <div class="dash-label">Page 3 — Product Deep Dive</div>
+        <div class="zoom-icon">⛶</div>
       </div>
-      <div class="page-card">
-        <div class="page-num">Page 4</div>
-        <div class="page-title">Customer Behaviour</div>
-        <div class="page-visuals">Orders by Segment · Monthly Orders line · Top 10 Customers bar · Segment &amp; customer slicers</div>
+      <div class="dash-thumb" onclick="openLightbox('powerbi/page4_customer_behaviour.png','Page 4 — Customer Behaviour')">
+        <img src="powerbi/page4_customer_behaviour.png" alt="Customer Behaviour" />
+        <div class="dash-label">Page 4 — Customer Behaviour</div>
+        <div class="zoom-icon">⛶</div>
       </div>
     </div>
 
@@ -666,6 +729,28 @@
   <p style="margin-top:8px"><a href="https://github.com/itaijoffe">github.com/itaijoffe</a></p>
   <p style="margin-top:16px;font-size:.78rem;color:#555">PixelDrop is a fictional brand created for portfolio purposes.</p>
 </footer>
+
+<!-- ═══ LIGHTBOX ══════════════════════════════════════════════════════════════ -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <button id="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="" />
+  <div id="lightbox-caption"></div>
+</div>
+
+<script>
+  function openLightbox(src, caption) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(e) {
+    if (e && e.target === document.getElementById('lightbox-img')) return;
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
 
 </body>
 </html>
