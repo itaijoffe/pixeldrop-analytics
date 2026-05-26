@@ -1,0 +1,14 @@
+{
+  "name": "PixelDrop Theme",
+  "dataColors": [
+    "#1B1F3B",
+    "#E63946",
+    "#457B9D",
+    "#2A9D8F",
+    "#E9C46A",
+    "#F4A261"
+  ],
+  "background": "#F5F5F0",
+  "foreground": "#1B1F3B",
+  "tableAccent": "#E63946"
+}
