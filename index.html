@@ -158,12 +158,22 @@
       background: var(--white); border-radius: 10px; overflow: hidden;
       box-shadow: 0 2px 12px rgba(0,0,0,.08);
       transition: transform .2s, box-shadow .2s;
+      cursor: zoom-in; position: relative;
     }
     .chart-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
     .chart-card img { width: 100%; display: block; }
     .chart-card .chart-info { padding: 14px 16px; }
     .chart-card .chart-title { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
     .chart-card .chart-insight { font-size: .82rem; color: var(--gray); }
+    .chart-card .zoom-icon {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(230,57,70,.85);
+      color: #fff; border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; opacity: 0; transition: opacity .2s;
+    }
+    .chart-card:hover .zoom-icon { opacity: 1; }
 
     /* ─── RFM ───────────────────────────────────────────────────── */
     .rfm-grid {
@@ -481,57 +491,65 @@
     </p>
 
     <div class="charts-grid">
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/01_revenue_by_category.png','Revenue by Category')">
         <img src="charts/01_revenue_by_category.png" alt="Revenue by Category" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Revenue by Category</div>
           <div class="chart-insight">Sneakers lead at 36% — but Accessories deliver the best gross margin at 65%.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/02_top5_products.png','Revenue vs. Volume Leaders')">
         <img src="charts/02_top5_products.png" alt="Top 5 Products" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Revenue vs. Volume Leaders</div>
           <div class="chart-insight">The top 5 by revenue and top 5 by units are completely different lists — only Retro Runner Sneaker appears in both.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/10_weekly_revenue_trend.png','Weekly Revenue Trend (2023–2024)')">
         <img src="charts/10_weekly_revenue_trend.png" alt="Weekly Revenue Trend" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Weekly Revenue Trend (2023–2024)</div>
           <div class="chart-insight">Two-year trend with 4-week rolling average — reveals seasonal patterns and the 2024 dip.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/14_monthly_revenue_growth.png','Monthly Revenue &amp; MoM Growth')">
         <img src="charts/14_monthly_revenue_growth.png" alt="Monthly Revenue with MoM Growth" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Monthly Revenue &amp; MoM Growth</div>
           <div class="chart-insight">Dual-axis chart: revenue bars with month-over-month % growth overlay.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/08_quarterly_revenue.png','Revenue by Quarter — 2023 vs 2024')">
         <img src="charts/08_quarterly_revenue.png" alt="Quarterly Revenue" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Revenue by Quarter — 2023 vs 2024</div>
           <div class="chart-insight">Side-by-side quarterly comparison highlights where 2024 underperformed 2023.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/11_orders_heatmap.png','Orders Heatmap — Month × Day of Week')">
         <img src="charts/11_orders_heatmap.png" alt="Orders Heatmap" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Orders Heatmap — Month × Day of Week</div>
           <div class="chart-insight">Demand pattern reveals the best days and months for promotions.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/03_return_rate_by_product.png','Return Rate by Product')">
         <img src="charts/03_return_rate_by_product.png" alt="Return Rate by Product" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Return Rate by Product</div>
           <div class="chart-insight">Air Hoodie leads at 7.31% — average line helps spot outliers quickly.</div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" onclick="openLightbox('charts/12_shipping_vs_returns.png','Shipping Speed vs. Return Rate')">
         <img src="charts/12_shipping_vs_returns.png" alt="Shipping Speed vs Return Rate" />
+        <div class="zoom-icon">⛶</div>
         <div class="chart-info">
           <div class="chart-title">Shipping Speed vs. Return Rate</div>
           <div class="chart-insight">Dual-axis: do slower deliveries drive more returns? The data has an answer.</div>
@@ -590,27 +608,26 @@
       a data model connecting multiple tables, and advanced DAX for accurate KPIs.
     </p>
 
-    <p style="font-size:.85rem;color:var(--gray);margin-bottom:14px;">👆 Click any page to expand</p>
-    <div class="dashboard-grid">
-      <div class="dash-thumb" onclick="openLightbox('powerbi/page1_executive_overview.png','Page 1 — Executive Overview')">
-        <img src="powerbi/page1_executive_overview.png" alt="Executive Overview" />
-        <div class="dash-label">Page 1 — Executive Overview</div>
-        <div class="zoom-icon">⛶</div>
+    <div class="pages-grid">
+      <div class="page-card">
+        <div class="page-num">Page 1</div>
+        <div class="page-title">Executive Overview</div>
+        <div class="page-visuals">Total Revenue · AOV · Units Sold · Revenue by Category · Weekly Trend</div>
       </div>
-      <div class="dash-thumb" onclick="openLightbox('powerbi/page2_geographic_analysis.png','Page 2 — Geographic Analysis')">
-        <img src="powerbi/page2_geographic_analysis.png" alt="Geographic Analysis" />
-        <div class="dash-label">Page 2 — Geographic Analysis</div>
-        <div class="zoom-icon">⛶</div>
+      <div class="page-card">
+        <div class="page-num">Page 2</div>
+        <div class="page-title">Geographic Analysis</div>
+        <div class="page-visuals">Revenue by State · Return Rate by Region · Customer Map</div>
       </div>
-      <div class="dash-thumb" onclick="openLightbox('powerbi/page3_product_deep_dive.png','Page 3 — Product Deep Dive')">
-        <img src="powerbi/page3_product_deep_dive.png" alt="Product Deep Dive" />
-        <div class="dash-label">Page 3 — Product Deep Dive</div>
-        <div class="zoom-icon">⛶</div>
+      <div class="page-card">
+        <div class="page-num">Page 3</div>
+        <div class="page-title">Product Deep Dive</div>
+        <div class="page-visuals">Top Products · Margin by Category · Return Rate by Product</div>
       </div>
-      <div class="dash-thumb" onclick="openLightbox('powerbi/page4_customer_behaviour.png','Page 4 — Customer Behaviour')">
-        <img src="powerbi/page4_customer_behaviour.png" alt="Customer Behaviour" />
-        <div class="dash-label">Page 4 — Customer Behaviour</div>
-        <div class="zoom-icon">⛶</div>
+      <div class="page-card">
+        <div class="page-num">Page 4</div>
+        <div class="page-title">Customer Behaviour</div>
+        <div class="page-visuals">RFM Segments · Repeat Rate · Payment Methods · Discount Impact</div>
       </div>
     </div>
 
