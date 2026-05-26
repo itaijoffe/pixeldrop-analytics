@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelDrop Analytics | Itai Joffe</title>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #1B1F3B;
+      --red:    #E63946;
+      --blue:   #457B9D;
+      --teal:   #2A9D8F;
+      --gold:   #E9C46A;
+      --bg:     #F5F5F0;
+      --white:  #FFFFFF;
+      --gray:   #555555;
+      --lgray:  #F0F0F0;
+      --border: #DDDDDD;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.6;
+    }
+
+    /* ─── Nav ───────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+    .nav-brand { color: var(--white); font-weight: 700; font-size: 1.1rem; letter-spacing: .5px; }
+    .nav-brand span { color: var(--red); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: #AAAAAA; text-decoration: none; font-size: .9rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
+    #hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 90px 40px 80px;
+      text-align: center;
+    }
+    .hero-label {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 3px;
+      margin-bottom: 22px;
+    }
+    #hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 800; line-height: 1.1; }
+    #hero h1 span { color: var(--red); }
+    #hero .sub {
+      font-size: 1.15rem; color: #AAAAAA; margin: 18px auto 0; max-width: 620px;
+    }
+    .hero-tags {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 10px; margin: 32px auto 0; max-width: 700px;
+    }
+    .tag {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      color: #CCCCCC;
+      font-size: .82rem; padding: 5px 14px; border-radius: 20px;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 40px; margin-top: 50px;
+    }
+    .stat { text-align: center; }
+    .stat .number { font-size: 2rem; font-weight: 800; color: var(--red); }
+    .stat .label  { font-size: .8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ─── Sections ──────────────────────────────────────────────── */
+    section { padding: 72px 40px; }
+    section:nth-child(even) { background: var(--white); }
+    .container { max-width: 1040px; margin: 0 auto; }
+    .section-tag {
+      font-size: .75rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 8px;
+    }
+    h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+    .lead { font-size: 1.05rem; color: var(--gray); max-width: 680px; margin-bottom: 36px; }
+    hr.divider { border: none; border-top: 2px solid var(--red); margin: 0 0 36px; width: 48px; }
+
+    /* ─── Phase cards ───────────────────────────────────────────── */
+    .phase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 24px; }
+    .phase-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 28px;
+      border-top: 4px solid var(--red);
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .phase-card.blue  { border-top-color: var(--blue); }
+    .phase-card.teal  { border-top-color: var(--teal); }
+    .phase-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+    .phase-card .phase-num {
+      font-size: .72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 6px;
+    }
+    .phase-card.blue .phase-num  { color: var(--blue); }
+    .phase-card.teal .phase-num  { color: var(--teal); }
+    .phase-card ul { list-style: none; margin-top: 12px; }
+    .phase-card ul li { padding: 4px 0; font-size: .92rem; color: var(--gray); }
+    .phase-card ul li::before { content: "→ "; color: var(--red); font-weight: 700; }
+    .phase-card.blue ul li::before  { color: var(--blue); }
+    .phase-card.teal ul li::before  { color: var(--teal); }
+
+    /* ─── SQL section ───────────────────────────────────────────── */
+    .pipeline-table {
+      width: 100%; border-collapse: collapse; font-size: .9rem;
+      background: var(--white); border-radius: 8px; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .pipeline-table th {
+      background: var(--navy); color: var(--white); padding: 10px 14px;
+      text-align: left; font-size: .82rem; letter-spacing: .5px;
+    }
+    .pipeline-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+    .pipeline-table tr:last-child td { border: none; }
+    .pipeline-table tr:nth-child(even) td { background: var(--lgray); }
+    .script-num { font-weight: 700; color: var(--red); font-size: .9rem; }
+
+    .findings-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    .finding-card {
+      background: var(--navy); color: var(--white);
+      border-radius: 8px; padding: 20px;
+    }
+    .finding-card .metric { font-size: .75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .finding-card .value  { font-size: 1.5rem; font-weight: 800; color: var(--red); }
+    .finding-card .desc   { font-size: .85rem; color: #AAAAAA; margin-top: 4px; }
+
+    /* ─── Charts grid ───────────────────────────────────────────── */
+    .charts-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 24px;
+    }
+    .chart-card {
+      background: var(--white); border-radius: 10px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .chart-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .chart-card img { width: 100%; display: block; }
+    .chart-card .chart-info { padding: 14px 16px; }
+    .chart-card .chart-title { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+    .chart-card .chart-insight { font-size: .82rem; color: var(--gray); }
+
+    /* ─── RFM ───────────────────────────────────────────────────── */
+    .rfm-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap: 14px; margin-top: 24px;
+    }
+    .rfm-card {
+      border-radius: 8px; padding: 18px 20px; text-align: center;
+    }
+    .rfm-card .rfm-seg  { font-weight: 700; margin-bottom: 4px; font-size: 1rem; }
+    .rfm-card .rfm-n    { font-size: 1.8rem; font-weight: 800; }
+    .rfm-card .rfm-act  { font-size: .78rem; margin-top: 6px; opacity: .8; }
+    .rfm-champions { background: #1B1F3B; color: #fff; }
+    .rfm-loyal     { background: #457B9D; color: #fff; }
+    .rfm-potential { background: #2A9D8F; color: #fff; }
+    .rfm-atrisk    { background: #E63946; color: #fff; }
+    .rfm-new       { background: #E9C46A; color: #1B1F3B; }
+
+    /* ─── Power BI ──────────────────────────────────────────────── */
+    .dax-block {
+      background: var(--navy); border-radius: 8px; padding: 24px 28px;
+      margin-top: 24px;
+    }
+    .dax-block h4 { color: var(--white); font-size: .85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+    .dax-measure { margin-bottom: 12px; }
+    .dax-measure .dax-name { color: var(--gold); font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
+    .dax-measure code {
+      background: rgba(255,255,255,.06);
+      color: #CCCCCC; font-size: .8rem; font-family: 'Cascadia Code', 'Courier New', monospace;
+      display: block; padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--red);
+    }
+
+    .pages-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px; margin-top: 20px;
+    }
+    .page-card {
+      background: var(--lgray); border-radius: 8px; padding: 18px;
+      border-left: 4px solid var(--red);
+    }
+    .page-num { font-weight: 800; color: var(--red); font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .page-title { font-weight: 700; margin: 4px 0 8px; }
+    .page-visuals { font-size: .83rem; color: var(--gray); line-height: 1.5; }
+
+    /* ─── Insights ──────────────────────────────────────────────── */
+    .insights-list { display: grid; gap: 14px; }
+    .insight-row {
+      display: grid; grid-template-columns: 160px 1fr;
+      gap: 16px; align-items: start;
+      background: var(--white); border-radius: 8px;
+      border-left: 4px solid var(--red); padding: 16px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    }
+    .insight-area { font-weight: 700; color: var(--red); font-size: .9rem; }
+    .insight-text { font-size: .93rem; color: var(--gray); }
+
+    /* ─── Skills ────────────────────────────────────────────────── */
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+      gap: 20px;
+    }
+    .skill-group { background: var(--white); border-radius: 8px; padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .skill-group h4 { font-size: .85rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--red); margin-bottom: 12px; }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      background: var(--lgray); color: var(--navy);
+      font-size: .8rem; font-weight: 600;
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: var(--navy); color: #888;
+      text-align: center; padding: 40px 20px; font-size: .88rem;
+    }
+    footer a { color: var(--red); text-decoration: none; }
+    footer .footer-name { color: var(--white); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      section { padding: 52px 20px; }
+      #hero { padding: 60px 20px 52px; }
+      .insight-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ════════════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-brand">Pixel<span>Drop</span> Analytics</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#sql">SQL</a></li>
+    <li><a href="#pandas">Python</a></li>
+    <li><a href="#powerbi">Power BI</a></li>
+    <li><a href="#insights">Insights</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-label">Portfolio Project · Data Analytics</div>
+    <h1>PixelDrop<br/><span>Analytics</span></h1>
+    <p class="sub">
+      An end-to-end data analytics project for a fictional streetwear brand —
+      from raw messy data to actionable business insights, built across SQL, Python and Power BI.
+    </p>
+    <div class="hero-tags">
+      <span class="tag">T-SQL · SQL Server</span>
+      <span class="tag">Python · Pandas</span>
+      <span class="tag">Matplotlib · Seaborn</span>
+      <span class="tag">Power BI · DAX</span>
+      <span class="tag">RFM Segmentation</span>
+      <span class="tag">EDA</span>
+      <span class="tag">Data Cleaning</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="number">47K+</div><div class="label">Records Cleaned</div></div>
+      <div class="stat"><div class="number">$6M</div><div class="label">Revenue Analysed</div></div>
+      <div class="stat"><div class="number">21</div><div class="label">Business Questions</div></div>
+      <div class="stat"><div class="number">14</div><div class="label">Visualisations</div></div>
+      <div class="stat"><div class="number">4</div><div class="label">Dashboard Pages</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ OVERVIEW ═══════════════════════════════════════════════════════════ -->
+<section id="overview">
+  <div class="container">
+    <div class="section-tag">Project Overview</div>
+    <h2>The Full Analyst Pipeline</h2>
+    <hr class="divider" />
+    <p class="lead">
+      PixelDrop is a fictional streetwear brand. The goal was to simulate a real analyst role:
+      take raw business data with real-world quality issues through every stage of the analytics
+      pipeline and surface insights a business could act on.
+    </p>
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-num">Phase 1</div>
+        <h3>SQL — Cleaning &amp; Analysis</h3>
+        <ul>
+          <li>8 T-SQL cleaning scripts</li>
+          <li>47,000+ records processed</li>
+          <li>3 clean views created</li>
+          <li>21 business questions answered</li>
+          <li>CTEs, window functions, LAG()</li>
+        </ul>
+      </div>
+      <div class="phase-card blue">
+        <div class="phase-num">Phase 2</div>
+        <h3>Python — EDA &amp; Segmentation</h3>
+        <ul>
+          <li>5 Jupyter notebooks</li>
+          <li>Full cleaning pipeline in Pandas</li>
+          <li>RFM customer segmentation</li>
+          <li>14 portfolio-quality charts</li>
+          <li>Matplotlib &amp; Seaborn</li>
+        </ul>
+      </div>
+      <div class="phase-card teal">
+        <div class="phase-num">Phase 3</div>
+        <h3>Power BI — Dashboard</h3>
+        <ul>
+          <li>4-page interactive dashboard</li>
+          <li>5 custom DAX measures</li>
+          <li>SQL Server data model</li>
+          <li>Custom PixelDrop theme</li>
+          <li>INTERSECT() return rate logic</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SQL ════════════════════════════════════════════════════════════════ -->
+<section id="sql">
+  <div class="container">
+    <div class="section-tag">Phase 1</div>
+    <h2>SQL Cleaning &amp; Analysis</h2>
+    <hr class="divider" />
+    <p class="lead">
+      Eight dedicated T-SQL scripts — each scoped to one task — cleaned the raw data before
+      any analysis began. The result: three clean views powering 21 business questions.
+    </p>
+
+    <table class="pipeline-table">
+      <thead>
+        <tr><th>#</th><th>Script</th><th>What It Fixed</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="script-num">01</td><td>Explore Raw Data</td><td>Baseline audit of all quality issues</td><td>Read-only — no changes</td></tr>
+        <tr><td class="script-num">02</td><td>Remove Duplicates</td><td>Duplicate order_ids</td><td>315 rows removed</td></tr>
+        <tr><td class="script-num">03</td><td>Standardise Dates</td><td>Mixed formats across 3 tables</td><td>Unified to datetime</td></tr>
+        <tr><td class="script-num">04</td><td>Standardise Text</td><td>Inconsistent segment, state, status</td><td>Mapped to canonical values</td></tr>
+        <tr><td class="script-num">05</td><td>Fix Numbers</td><td>Bad quantities, impossible discounts, null prices</td><td>562 + 566 + 540 values fixed</td></tr>
+        <tr><td class="script-num">06</td><td>Flag Invalid</td><td>Invalid emails &amp; ghost orders</td><td>151 emails flagged</td></tr>
+        <tr><td class="script-num">07</td><td>Create Views</td><td>Build clean analysis layer</td><td>3 views: customers, orders, order_summary</td></tr>
+        <tr><td class="script-num">08</td><td>Business Questions</td><td>21 analytical queries</td><td>Findings documented inline</td></tr>
+      </tbody>
+    </table>
+
+    <div class="findings-grid">
+      <div class="finding-card">
+        <div class="metric">Total Revenue</div>
+        <div class="value">$6,006,804</div>
+        <div class="desc">2023–2024 combined</div>
+      </div>
+      <div class="finding-card">
+        <div class="metric">Repeat Customer Rate</div>
+        <div class="value">79.63%</div>
+        <div class="desc">91% retention YoY</div>
+      </div>
+      <div class="finding-card">
+        <div class="metric">Return Rate</div>
+        <div class="value">7.69%</div>
+        <div class="desc">vs 20–30% industry avg</div>
+      </div>
+      <div class="finding-card">
+        <div class="metric">Avg Order Value</div>
+        <div class="value">$521</div>
+        <div class="desc">Stable across all payment methods</div>
+      </div>
+      <div class="finding-card">
+        <div class="metric">Top Category</div>
+        <div class="value">Sneakers</div>
+        <div class="desc">36% of total revenue</div>
+      </div>
+      <div class="finding-card">
+        <div class="metric">Discount Risk</div>
+        <div class="value">54.5%</div>
+        <div class="desc">of items discounted — margin risk</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PANDAS ═════════════════════════════════════════════════════════════ -->
+<section id="pandas">
+  <div class="container">
+    <div class="section-tag">Phase 2</div>
+    <h2>Python / Pandas EDA</h2>
+    <hr class="divider" />
+    <p class="lead">
+      Five Jupyter notebooks cover the complete Python analytics pipeline — from cleaning
+      to customer segmentation and portfolio-quality visualisations.
+    </p>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <img src="charts/01_revenue_by_category.png" alt="Revenue by Category" />
+        <div class="chart-info">
+          <div class="chart-title">Revenue by Category</div>
+          <div class="chart-insight">Sneakers lead at 36% — but Accessories deliver the best gross margin at 65%.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/02_top5_products.png" alt="Top 5 Products" />
+        <div class="chart-info">
+          <div class="chart-title">Revenue vs. Volume Leaders</div>
+          <div class="chart-insight">The top 5 by revenue and top 5 by units are completely different lists — only Retro Runner Sneaker appears in both.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/10_weekly_revenue_trend.png" alt="Weekly Revenue Trend" />
+        <div class="chart-info">
+          <div class="chart-title">Weekly Revenue Trend (2023–2024)</div>
+          <div class="chart-insight">Two-year trend with 4-week rolling average — reveals seasonal patterns and the 2024 dip.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/14_monthly_revenue_growth.png" alt="Monthly Revenue with MoM Growth" />
+        <div class="chart-info">
+          <div class="chart-title">Monthly Revenue &amp; MoM Growth</div>
+          <div class="chart-insight">Dual-axis chart: revenue bars with month-over-month % growth overlay.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/08_quarterly_revenue.png" alt="Quarterly Revenue" />
+        <div class="chart-info">
+          <div class="chart-title">Revenue by Quarter — 2023 vs 2024</div>
+          <div class="chart-insight">Side-by-side quarterly comparison highlights where 2024 underperformed 2023.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/11_orders_heatmap.png" alt="Orders Heatmap" />
+        <div class="chart-info">
+          <div class="chart-title">Orders Heatmap — Month × Day of Week</div>
+          <div class="chart-insight">Demand pattern reveals the best days and months for promotions.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/03_return_rate_by_product.png" alt="Return Rate by Product" />
+        <div class="chart-info">
+          <div class="chart-title">Return Rate by Product</div>
+          <div class="chart-insight">Air Hoodie leads at 7.31% — average line helps spot outliers quickly.</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <img src="charts/12_shipping_vs_returns.png" alt="Shipping Speed vs Return Rate" />
+        <div class="chart-info">
+          <div class="chart-title">Shipping Speed vs. Return Rate</div>
+          <div class="chart-insight">Dual-axis: do slower deliveries drive more returns? The data has an answer.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RFM -->
+    <div style="margin-top: 52px;">
+      <div class="section-tag">Customer Segmentation</div>
+      <h2>RFM Analysis</h2>
+      <hr class="divider" />
+      <p class="lead">
+        Every customer was scored on Recency, Frequency and Monetary value (1–4 scale), then
+        assigned to a segment — enabling precision marketing instead of blanket discounts.
+      </p>
+      <div class="rfm-grid">
+        <div class="rfm-card rfm-champions">
+          <div class="rfm-seg">Champions</div>
+          <div class="rfm-n">406</div>
+          <div class="rfm-act">Loyalty perks · Early access</div>
+        </div>
+        <div class="rfm-card rfm-loyal">
+          <div class="rfm-seg">Loyal</div>
+          <div class="rfm-n">478</div>
+          <div class="rfm-act">Upsell · Bundle offers</div>
+        </div>
+        <div class="rfm-card rfm-potential">
+          <div class="rfm-seg">Potential</div>
+          <div class="rfm-n">446</div>
+          <div class="rfm-act">Nurture · 2nd purchase push</div>
+        </div>
+        <div class="rfm-card rfm-atrisk">
+          <div class="rfm-seg">At Risk</div>
+          <div class="rfm-n">343</div>
+          <div class="rfm-act">Win-back campaign</div>
+        </div>
+        <div class="rfm-card rfm-new">
+          <div class="rfm-seg">New</div>
+          <div class="rfm-n">54</div>
+          <div class="rfm-act">Onboarding flow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ POWER BI ════════════════════════════════════════════════════════════ -->
+<section id="powerbi">
+  <div class="container">
+    <div class="section-tag">Phase 3</div>
+    <h2>Power BI Dashboard</h2>
+    <hr class="divider" />
+    <p class="lead">
+      Four focused dashboard pages built on SQL Server clean views. Custom PixelDrop theme,
+      a data model connecting multiple tables, and advanced DAX for accurate KPIs.
+    </p>
+
+    <div class="pages-grid">
+      <div class="page-card">
+        <div class="page-num">Page 1</div>
+        <div class="page-title">Executive Overview</div>
+        <div class="page-visuals">4 KPI cards · Top 5 Products bar · Revenue by Category donut · Monthly Revenue line chart</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">Page 2</div>
+        <div class="page-title">Geographic Analysis</div>
+        <div class="page-visuals">US bubble map · Top 5 States bar chart · Orders by Customer Segment donut</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">Page 3</div>
+        <div class="page-title">Product Deep Dive</div>
+        <div class="page-visuals">All Products bar · Revenue vs Units scatter plot · Product Performance summary table</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">Page 4</div>
+        <div class="page-title">Customer Behaviour</div>
+        <div class="page-visuals">Orders by Segment · Monthly Orders line · Top 10 Customers bar · Segment &amp; customer slicers</div>
+      </div>
+    </div>
+
+    <div class="dax-block">
+      <h4>DAX Measures</h4>
+      <div class="dax-measure">
+        <div class="dax-name">Total Revenue</div>
+        <code>SUM(vw_order_summary[line_total])</code>
+      </div>
+      <div class="dax-measure">
+        <div class="dax-name">Total Orders</div>
+        <code>DISTINCTCOUNT(vw_order_summary[order_id])</code>
+      </div>
+      <div class="dax-measure">
+        <div class="dax-name">Avg Order Value</div>
+        <code>DIVIDE([Total Revenue], [Total Orders])</code>
+      </div>
+      <div class="dax-measure">
+        <div class="dax-name">Return Rate %  <span style="color:#888;font-size:.8rem;font-weight:400">— uses INTERSECT() to match only valid clean orders</span></div>
+        <code>DIVIDE(COUNTROWS(INTERSECT(VALUES(returns[order_id]), VALUES(vw_clean_orders[order_id]))), DISTINCTCOUNT(vw_clean_orders[order_id])) * 100</code>
+      </div>
+      <div class="dax-measure">
+        <div class="dax-name">Avg Discount %</div>
+        <code>AVERAGE(vw_order_summary[discount]) * 100</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INSIGHTS ════════════════════════════════════════════════════════════ -->
+<section id="insights">
+  <div class="container">
+    <div class="section-tag">Key Findings</div>
+    <h2>Business Insights</h2>
+    <hr class="divider" />
+    <p class="lead">Consistent findings validated across all three tools — SQL, Python and Power BI.</p>
+    <div class="insights-list">
+      <div class="insight-row">
+        <div class="insight-area">Revenue &amp; Growth</div>
+        <div class="insight-text">$6M total (2023–2024). Sneakers dominate revenue (36%) but Accessories deliver the best gross margin (65%). A ~2.5% dip in 2024 was flagged for executive review.</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-area">Product Strategy</div>
+        <div class="insight-text">Revenue leaders and volume leaders are completely different lists. Only Retro Runner Sneaker appears in both top 5 — making it the one true sweet-spot product in the range.</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-area">Customer Loyalty</div>
+        <div class="insight-text">79% repeat customer rate and 91% retention YoY. RFM identifies 406 Champions (target for loyalty perks) and 343 At-Risk customers (target for win-back campaigns).</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-area">Returns</div>
+        <div class="insight-text">7.69% overall — well below the 20–30% industry average. Air Hoodie has the highest product return rate (7.31%), suggesting a sizing issue. Two serial returners identified with ~75% personal return rates — behavioural, not a product defect.</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-area">Discount Risk</div>
+        <div class="insight-text">54.5% of line items had discounts applied. Correlation analysis shows near-zero relationship between discount level and units purchased — the business is giving away margin with no volume benefit.</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-area">Geographic Signal</div>
+        <div class="insight-text">Florida and Georgia show the highest customer return rates. Worth investigating — potential causes include sizing chart gaps or logistics/fulfilment issues in those markets.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SKILLS ══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-tag">Skills Demonstrated</div>
+    <h2>Tech Stack</h2>
+    <hr class="divider" />
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h4>SQL</h4>
+        <div class="skill-pills">
+          <span class="pill">T-SQL</span><span class="pill">SQL Server</span>
+          <span class="pill">CTEs</span><span class="pill">Window Functions</span>
+          <span class="pill">RANK / DENSE_RANK</span><span class="pill">LAG()</span>
+          <span class="pill">Views</span><span class="pill">JOINs</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>Python</h4>
+        <div class="skill-pills">
+          <span class="pill">Python 3</span><span class="pill">Pandas</span>
+          <span class="pill">NumPy</span><span class="pill">Matplotlib</span>
+          <span class="pill">Seaborn</span><span class="pill">Jupyter</span>
+          <span class="pill">RFM Analysis</span><span class="pill">EDA</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>Power BI</h4>
+        <div class="skill-pills">
+          <span class="pill">Power BI Desktop</span><span class="pill">DAX</span>
+          <span class="pill">Power Query</span><span class="pill">Data Modelling</span>
+          <span class="pill">INTERSECT()</span><span class="pill">CALCULATE()</span>
+          <span class="pill">Custom Themes</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>Analysis</h4>
+        <div class="skill-pills">
+          <span class="pill">Data Cleaning</span><span class="pill">EDA</span>
+          <span class="pill">KPI Definition</span><span class="pill">Customer Segmentation</span>
+          <span class="pill">Period-over-Period</span><span class="pill">Insight Narration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ══════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-name">Itai Joffe</div>
+  <p>Junior Data Analyst · <a href="mailto:itai19957@gmail.com">itai19957@gmail.com</a> · +972 52-635-5412</p>
+  <p style="margin-top:8px"><a href="https://github.com/itaijoffe">github.com/itaijoffe</a></p>
+  <p style="margin-top:16px;font-size:.78rem;color:#555">PixelDrop is a fictional brand created for portfolio purposes.</p>
+</footer>
+
+</body>
+</html>
